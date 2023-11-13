@@ -1,18 +1,17 @@
 package entities;
 
+import entities.enums.WorkerLevel;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-import entities.enums.WorkerLevel;
 
 public class Worker {
 	private String name;
 	private WorkerLevel level;
 	private Double baseSalary;
 	private List<HourContract> contracts = new ArrayList<>();
-	private Department department;
+	private final Department department;
 	
 	public void addContract(HourContract contract) {
 		contracts.add(contract);
@@ -22,9 +21,9 @@ public class Worker {
 		contracts.remove(contract);
 	}
 
-	public Double income(Integer year, Integer month) {
-		String monthFormatted = month < 10 ? "0" + month : month.toString();
-		LocalDate dateUser = LocalDate.parse(year + "-" + monthFormatted + "-" + "01");
+	public String income(String date) {
+		String[] monthAndYear = date.split("/");
+		LocalDate dateUser = LocalDate.parse(monthAndYear[1] + "-" + monthAndYear[0] + "-" + "01");
 		List<HourContract> filterByDate = contracts.stream().filter(list -> list.getDate().isAfter(dateUser)).toList();
 		Double reduceValue = 0.0;
 
@@ -32,7 +31,9 @@ public class Worker {
 			reduceValue += contract.totalValue();
 		}
 
-		return reduceValue;
+		return "Name: " + this.name + "\n" +
+				"Department: " + this.department + "\n" +
+				"Income for " + date + ": " + reduceValue;
 	}
 
 	public Department getDepartment() {
